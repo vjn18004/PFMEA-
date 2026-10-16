@@ -17,7 +17,12 @@ export function suggestFailures(fn, characteristic) {
   return [...new Set([wrong,`${action} utförs inte; ${characteristic} uppnås inte.`,`${action} utförs ofullständigt; ${characteristic} uppnås endast delvis.`])];
 }
 export function isReady(items) {return items.length>0 && items.every(x=>x.op && x.fn.trim());}
-export function csvExport(items, mainProcessName = '', operationResources = {}) {
- const rows=[['Operation','Produktegenskap','Funktion','Felsätt','Huvudprocess','Människa','Maskin','Material','Metod'],...items.flatMap(x=>(x.failures.length?x.failures:['']).map(f=>[x.op||'',x.name,x.fn,f,mainProcessName,...['Människa','Maskin','Material','Metod'].map(category=>(operationResources[x.op]||[]).filter(r=>r.category===category).map(r=>r.description||r.category).join(' | '))]))];
+export function csvExport(items, mainProcessName = '', operationResources = {}, mainProcessFunction = null) {
+ const header=['Operation','Produktegenskap','Funktion','Felsätt','Huvudprocess','Människa','Maskin','Material','Metod','Nivå','4M-kategori','Resurs','Funktions-ID'];
+ const resourcesFor=op=>['Människa','Maskin','Material','Metod'].map(category=>(operationResources[op]||[]).filter(r=>r.category===category).map(r=>r.description||r.category).join(' | '));
+ const rows=[header];
+ if(mainProcessFunction)for(const failure of mainProcessFunction.failures.length?mainProcessFunction.failures:[''])rows.push(['','',mainProcessFunction.text,failure,mainProcessName,'','','','','Huvudprocess','','',mainProcessFunction.id]);
+ for(const item of items)for(const failure of item.failures.length?item.failures:[''])rows.push([item.op||'',item.name,item.fn,failure,mainProcessName,...resourcesFor(item.op),'Produktegenskap','','',item.id||'']);
+ for(const op of operations)for(const resource of operationResources[op]||[])for(const fn of resource.functions||[])for(const failure of fn.failures.length?fn.failures:[''])rows.push([op,'',fn.text,failure,mainProcessName,...resourcesFor(op),'4M',resource.category,resource.description,fn.id]);
  return '\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\r\n');
 }

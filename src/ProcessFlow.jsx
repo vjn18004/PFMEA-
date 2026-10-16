@@ -1,6 +1,7 @@
 import React,{useState} from 'react';
 import {GripVertical,CheckCircle2,Workflow,Users,Cog,Package,BookOpen,X,ArrowDown} from 'lucide-react';
 import {operations,operationNames} from './domain';
+import {emptyFunction} from './functions';
 const categories=[
  {name:'Människa',icon:Users,hint:'Operatör, kompetens eller ansvar',placeholder:'Exempel: CNC-operatör'},
  {name:'Maskin',icon:Cog,hint:'Utrustning, verktyg eller fixtur',placeholder:'Exempel: Borrmaskin och fixtur'},
@@ -11,7 +12,7 @@ const RESOURCE_TYPE='application/x-pfmea-4m';
 export default function ProcessFlow({items,mainProcessName,resources,onNameChange,onResourcesChange,onAssign,onRelease}){
  const [selected,setSelected]=useState(null),[over,setOver]=useState('');
  const unassigned=items.filter(x=>!x.op);
- function placeResource(op,category){if(!categories.some(x=>x.name===category))return;onResourcesChange(op,[...(resources[op]||[]),{id:crypto.randomUUID(),category,description:''}]);setSelected(null);}
+ function placeResource(op,category){if(!categories.some(x=>x.name===category))return;onResourcesChange(op,[...(resources[op]||[]),{id:crypto.randomUUID(),category,description:'',functions:[emptyFunction()]}]);setSelected(null);}
  function place(op){if(selected?.kind==='resource')placeResource(op,selected.value);else if(selected?.kind==='property'){onAssign(op,selected.value);setSelected(null);}}
  function drop(e,op,onlyResources=false){e.preventDefault();e.stopPropagation();setOver('');const category=e.dataTransfer.getData(RESOURCE_TYPE);if(category){placeResource(op,category);return;}const id=e.dataTransfer.getData('text/plain');if(!onlyResources&&items.some(x=>x.id===id)){onAssign(op,id);setSelected(null);}}
  function dragProperty(e,id){e.dataTransfer.setData('text/plain',id);e.dataTransfer.effectAllowed='move';}
