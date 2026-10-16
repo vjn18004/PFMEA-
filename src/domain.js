@@ -17,7 +17,7 @@ export function suggestFailures(fn, characteristic) {
   return [...new Set([wrong,`${action} utförs inte; ${characteristic} uppnås inte.`,`${action} utförs ofullständigt; ${characteristic} uppnås endast delvis.`])];
 }
 export function isReady(items) {return items.length>0 && items.every(x=>x.op && x.fn.trim());}
-export function csvExport(items) {
- const rows=[['Operation','Produktegenskap','Funktion','Felsätt'],...items.flatMap(x=>(x.failures.length?x.failures:['']).map(f=>[x.op||'',x.name,x.fn,f]))];
+export function csvExport(items, mainProcessName = '', operationResources = {}) {
+ const rows=[['Operation','Produktegenskap','Funktion','Felsätt','Huvudprocess','Människa','Maskin','Material','Metod'],...items.flatMap(x=>(x.failures.length?x.failures:['']).map(f=>[x.op||'',x.name,x.fn,f,mainProcessName,...['Människa','Maskin','Material','Metod'].map(category=>(operationResources[x.op]||[]).filter(r=>r.category===category).map(r=>r.description||r.category).join(' | '))]))];
  return '\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\r\n');
 }
