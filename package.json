@@ -1,0 +1,29 @@
+{
+  "name": "pfmea-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test src/*.test.js",
+    "postinstall": "node scripts/prepare-ocr.js",
+    "predev": "node scripts/prepare-ocr.js",
+    "prebuild": "node scripts/prepare-ocr.js",
+    "test:ui": "node scripts/smoke.cjs"
+  },
+  "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "@tesseract.js-data/swe": "^1.0.0",
+    "lucide-react": "^0.468.0",
+    "pdfjs-dist": "^5.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tesseract.js": "^6.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "vite": "^7.2.0"
+  }
+}
